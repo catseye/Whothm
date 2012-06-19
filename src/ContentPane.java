@@ -31,6 +31,7 @@ public class ContentPane extends JPanel  {
         canvas = new Canvas(bitmap);
         canvas.setBackground(Color.yellow);
         canvas.setMinimumSize(new Dimension(100, 50));
+        JScrollPane canvasScrollPane = new JScrollPane(canvas);
 
         progBox = new JTextArea();
         progBox.setText(
@@ -56,16 +57,17 @@ public class ContentPane extends JPanel  {
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyCode() == KeyEvent.VK_PAGE_UP) {
                     bitmap.alterPixelSize(-1);
-                    canvas.repaint();
+                    canvas.resize();
                     event.consume();
                 } else if (event.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
                     bitmap.alterPixelSize(+1);
-                    canvas.repaint();
+                    canvas.resize();
                     event.consume();
                 }
             }
             public void keyReleased(KeyEvent event) { }
         });
+        JScrollPane progScrollPane = new JScrollPane(progBox);
 
         JButton buttonRun = new JButton("Run");
         buttonRun.setMnemonic(KeyEvent.VK_R);
@@ -97,11 +99,11 @@ public class ContentPane extends JPanel  {
 
         JPanel progPanel = new JPanel(new BorderLayout());
         progPanel.setMinimumSize(new Dimension(100, 50));
-        progPanel.add(progBox, BorderLayout.CENTER);
+        progPanel.add(progScrollPane, BorderLayout.CENTER);
         progPanel.add(buttonRun, BorderLayout.PAGE_END);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-            progPanel, canvas);
+            progPanel, canvasScrollPane);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(150);
 
@@ -111,5 +113,6 @@ public class ContentPane extends JPanel  {
         this.add(splitPane, BorderLayout.CENTER);
         this.add(statusBar, BorderLayout.PAGE_END);
         this.setOpaque(true);
+        canvas.resize();
     }
 }

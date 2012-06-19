@@ -38,6 +38,14 @@ public class BitMap {
         return width;
     }
 
+    public int getPixelHeight() {
+        return pixel_height;
+    }
+
+    public int getPixelWidth() {
+        return pixel_width;
+    }
+
     public void alterWidth(int delta) {
         int newWidth = width + delta;
 
