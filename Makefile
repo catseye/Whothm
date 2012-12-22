@@ -1,8 +1,8 @@
 # Makefile for jwhothm.
 # $Id: Makefile 887 2011-01-11 05:47:53Z cpressey $
 
-JAVAC?="/cygdrive/c/Program Files/Java/jdk1.6.0_22/bin/javac"
-JAVA?="/cygdrive/c/Program Files/Java/jre6/bin/java"
+JAVAC?=javac
+JAVA?=java
 JAR?=jar
 
 JFLAGS?="-Xlint:deprecation"
@@ -48,11 +48,11 @@ $(CDIR)/GUI.class: src/GUI.java $(CDIR)/ContentPane.class
 $(CDIR)/Applet.class: src/Applet.java $(CDIR)/ContentPane.class
 	$(JAVAC) $(JFLAGS) -cp bin -d bin src/Applet.java
 
-whothm.jar:
-	$(JAR) cvf whothm.jar -C bin tc/catseye/whothm/*.class
+whothm.jar: $(CLASSES)
+	cd bin && $(JAR) cvf ../$@ tc/catseye/whothm/*.class
 
 clean:
-	rm -rf $(CDIR)/*.class
+	rm -rf $(CDIR)/*.class whothm.jar
 
 test: $(CDIR)/GUI.class
 	$(JAVA) -cp bin tc.catseye.whothm.GUI
