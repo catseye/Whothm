@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Application-Name: JWhothm
+Specification-Title: Whothm
+Specification-Version: 1.0.0
+Specification-Vendor: Cat's Eye Technologies
+Implementation-Title: JWhothm
+Implementation-Version: 1.0.20140819
+Implementation-Vendor: Cat's Eye Technologies
+Main-Class: tc.catseye.whothm.Applet
+Permissions: sandbox

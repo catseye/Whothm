@@ -49,7 +49,7 @@ $(CDIR)/Applet.class: src/Applet.java $(CDIR)/ContentPane.class
 	$(JAVAC) $(JFLAGS) -cp bin -d bin src/Applet.java
 
 whothm.jar: $(CLASSES)
-	cd bin && $(JAR) cvf ../$@ tc/catseye/whothm/*.class
+	cd bin && $(JAR) cvfm ../$@ ../manifest.txt tc/catseye/whothm/*.class
 
 clean:
 	rm -rf $(CDIR)/*.class whothm.jar
