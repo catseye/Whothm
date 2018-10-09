@@ -4,7 +4,7 @@ Specification-Title: Whothm
 Specification-Version: 1.0.0
 Specification-Vendor: Cat's Eye Technologies
 Implementation-Title: JWhothm
-Implementation-Version: 1.0.20140819
+Implementation-Version: 1.0.20181009
 Implementation-Vendor: Cat's Eye Technologies
-Main-Class: tc.catseye.whothm.Applet
+Main-Class: tc.catseye.whothm.GUI
 Permissions: sandbox
