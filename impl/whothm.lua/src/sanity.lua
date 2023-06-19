@@ -50,12 +50,14 @@ print(table.concat(scanned, "|"))
 
 
 local source = [[
-    ;   ;
+r := (0, 0, 1, 2);
+s := (0, 0, 1, 1);
+XOR := TF/FT;
 begin
 ;
 ;
 end
 ]]
 local p = Parser.new(source)
-local result = p.parse()
-print(result)
+local machine = p.parse()
+p.dump_state()

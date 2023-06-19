@@ -320,16 +320,16 @@ Parser.new = function(source)
     local m  -- machine
     local scanner = Scanner.new(source)
 
-    local is_token = function(s) return s == scanner.text() end
+    local token_is = function(s) return s == scanner.text() end
 
     methods.parse = function()
         m = Machine.new()
-        while not is_token("begin") do
+        while not token_is("begin") do
             methods.parse_decl()
             scanner.expect(";")
         end
         scanner.expect("begin")
-        while not is_token("end") do
+        while not token_is("end") do
             methods.parse_command()
             scanner.expect(";")
         end
@@ -338,11 +338,50 @@ Parser.new = function(source)
     end
 
     methods.parse_decl = function()
-        return 0
+        local name = scanner.text()
+        scanner.scan()
+        scanner.expect(":=")
+        if scanner.consume("(") then
+            -- it's a rectangle
+            local x = tonumber(scanner.text())
+            scanner.scan()
+            scanner.expect(",")
+            local y = tonumber(scanner.text())
+            scanner.scan()
+            scanner.expect(",")
+            local w = tonumber(scanner.text())
+            scanner.scan()
+            scanner.expect(",")
+            local h = tonumber(scanner.text())
+            scanner.scan()
+            scanner.expect(")")
+            rect_map[name] = Rectangle.new(x, y, w, h)
+        else
+            -- it's a truthtable
+            local tt = TruthTable.new()
+            local truth_pair = scanner.text()
+            scanner.scan()
+            tt.map_to_true(truth_pair)
+            while scanner.consume("/") do
+                truth_pair = scanner.text()
+                scanner.scan()
+                tt.map_to_true(truth_pair)
+            end
+            tt_map[name] = tt
+        end
     end
 
     methods.parse_command = function()
         return 0
+    end
+
+    methods.dump_state = function()
+        for key,value in pairs(rect_map) do
+            print(key, value.to_s())
+         end
+         for key,value in pairs(tt_map) do
+            print(key, value.to_s())
+         end
     end
 
     -- init
