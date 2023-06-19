@@ -145,8 +145,46 @@ BitMap.new = function(width, height)
     return methods
 end
 
+--[[ ============ SCANNER SUPPORT ============ ]]--
 
-DEBUG_SCAN = false
+DEBUG = false
+function debug(s)
+    if DEBUG then print(s) end
+end
+
+function isdigit(s)
+    return string.find("0123456789", s, 1, true) ~= nil
+end
+
+function islower(s)
+    return string.find("abcdefghijklmnopqrstuvwxyz", s, 1, true) ~= nil
+end
+
+function isupper(s)
+    return string.find("ABCDEFGHIJKLMNOPQRSTUVWXYZ", s, 1, true) ~= nil
+end
+
+function isalpha(s)
+    return islower(s) or isupper(s)
+end
+
+function isalnum(s)
+    return isalpha(s) or isdigit(s)
+end
+
+function issep(s)
+    return string.find("(),.;=", s, 1, true) ~= nil
+end
+
+function isspace(s)
+    return string.find(" \t", s, 1, true) ~= nil
+end
+
+function iseol(s)
+    return string.find("\n\r;", s, 1, true) ~= nil
+end
+
+--[[ ========== SCANNER ========== ]]--
 
 Scanner = {}
 Scanner.new = function(s)
@@ -166,14 +204,12 @@ Scanner.new = function(s)
     methods.set_token = function(text, type)
         _text = text
         _type = type
-        -- debug("set_token " .. text .. " (" .. type .. ")")
+        debug("set_token " .. text .. " (" .. type .. ")")
     end
 
     methods.scan = function()
         methods.scan_impl()
-        if DEBUG_SCAN then
-            print("scanned '" .. _text .. "' (" .. _type .. ")")
-        end
+        debug("scanned '" .. _text .. "' (" .. _type .. ")")
         return _text
     end
 

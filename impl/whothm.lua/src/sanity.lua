@@ -18,3 +18,24 @@ t.map_to_true("FT")
 t.map_to_true("TF")
 r.draw(b, t)
 print(b.render_to_text())
+
+local source = [[
+r := (0, 0, 1, 2);
+s := (0, 0, 1, 2);
+XOR := TF/FT;
+
+begin
+r.x += r.w;
+r.x += -1;
+r.w += 1;
+r.h += 1;
+draw r, XOR;
+s.x += s.w;
+s.x += -1;
+s.w += 1;
+s.h += 2;
+draw s, XOR;
+end
+]]
+local s = Scanner.new(source)
+print(s.scan())
