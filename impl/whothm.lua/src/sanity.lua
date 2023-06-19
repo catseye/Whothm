@@ -47,3 +47,15 @@ while token ~= "EOF" do
     token = s.scan()
 end
 print(table.concat(scanned, "|"))
+
+
+local source = [[
+    ;   ;
+begin
+;
+;
+end
+]]
+local p = Parser.new(source)
+local result = p.parse()
+print(result)

@@ -288,12 +288,22 @@ Scanner.new = function(s)
         if _text == s then
             methods.scan()
         else
-            raise_VeloSyntaxError("expected '" .. s ..
-                                  "', found '" .. _text .. "'")
+            error(
+                "expected '" .. s ..
+                "', found '" .. _text .. "'"
+            )
         end
     end
 
     debug("created scanner with string '" .. string .. "'")
+
+    return methods
+end
+
+
+Machine = {}
+Machine.new = function()
+    local methods = {}
 
     return methods
 end
@@ -309,6 +319,31 @@ Parser.new = function(source)
     local tt_map = {}
     local m  -- machine
     local scanner = Scanner.new(source)
+
+    local is_token = function(s) return s == scanner.text() end
+
+    methods.parse = function()
+        m = Machine.new()
+        while not is_token("begin") do
+            methods.parse_decl()
+            scanner.expect(";")
+        end
+        scanner.expect("begin")
+        while not is_token("end") do
+            methods.parse_command()
+            scanner.expect(";")
+        end
+        scanner.expect("end")
+        return m
+    end
+
+    methods.parse_decl = function()
+        return 0
+    end
+
+    methods.parse_command = function()
+        return 0
+    end
 
     -- init
     scanner.scan()
