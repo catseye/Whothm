@@ -1,5 +1,7 @@
 -- LUA_PATH="?.lua" lua sanity.lua
 
+table = require "table"
+
 r = require "whothm"
 
 local t = TruthTable.new()
@@ -21,7 +23,7 @@ print(b.render_to_text())
 
 local source = [[
 r := (0, 0, 1, 2);
-s := (0, 0, 1, 2);
+s := (0, 0, 1, -987654321);
 XOR := TF/FT;
 
 begin
@@ -38,4 +40,10 @@ draw s, XOR;
 end
 ]]
 local s = Scanner.new(source)
-print(s.scan())
+local scanned = {}
+token = s.scan()
+while token ~= "EOF" do
+    table.insert(scanned, token)
+    token = s.scan()
+end
+print(table.concat(scanned, "|"))

@@ -177,11 +177,11 @@ function issep(s)
 end
 
 function isspace(s)
-    return string.find(" \t", s, 1, true) ~= nil
+    return string.find(" \t\n\r", s, 1, true) ~= nil
 end
 
 function iseol(s)
-    return string.find("\n\r;", s, 1, true) ~= nil
+    return string.find("\n\r", s, 1, true) ~= nil
 end
 
 --[[ ========== SCANNER ========== ]]--
@@ -219,38 +219,17 @@ Scanner.new = function(s)
             string = string:sub(2)
             -- TODO: count pos and line
         end
-        
+
+        -- check for end of input
         if string == "" then
             methods.set_token("EOF", "EOF")
             return
         end
 
-        -- check for any single character tokens
-        local c = string:sub(1,1)
-        if issep(c) then
-            string = string:sub(2)
-            methods.set_token(c, "seperator")
-            return
-        end
-
-        -- check for arguments
-        if string:sub(1,1) == "#" then
+        -- else check for identifiers
+        if isalpha(string:sub(1,1)) then
             local len = 0
-            while isdigit(string:sub(2+len,2+len)) and len <= string:len() do
-                len = len + 1
-            end
-            if len > 0 then
-               local argnum = string:sub(2, 2+len-1)
-               string = string:sub(2+len)
-               methods.set_token(argnum, "arg")
-               return
-            end
-        end
-
-        -- check for strings of "word" characters
-        if isalnum(string:sub(1,1)) then
-            local len = 0
-            while isalnum(string:sub(1+len,1+len)) and len <= string:len() do
+            while isalpha(string:sub(1+len,1+len)) and len <= string:len() do
                 len = len + 1
             end
             local word = string:sub(1, 1+len-1)
@@ -259,9 +238,32 @@ Scanner.new = function(s)
             return
         end
 
-        debug("scanner couldn't scan '" .. string .. "'")
+        -- else check for literal decimal number
+        if string:sub(1,1) == "-" or isdigit(string:sub(1,1)) then
+            local len = 0
+            if string:sub(1,1) == "-" then
+                len = len + 1
+            end
+            while isdigit(string:sub(1+len,1+len)) and len <= string:len() do
+                len = len + 1
+            end
+            methods.set_token(string:sub(1, len), "numlit")
+            string = string:sub(len + 1)
+            return
+        end
 
-        methods.set_token('UNKNOWN', 'UNKNOWN')
+        -- else check for certain two-character tokens
+        local c = string:sub(1,2)
+        if c == "+=" or c == ":=" then
+            string = string:sub(3)
+            methods.set_token(c, "operator")
+            return
+        end
+
+        -- anything else => one character token
+        local c = string:sub(1,1)
+        string = string:sub(2)
+        methods.set_token(c, "operator")
     end
 
     methods.consume = function(s)
@@ -292,7 +294,6 @@ Scanner.new = function(s)
     end
 
     debug("created scanner with string '" .. string .. "'")
-    methods.scan()
 
     return methods
 end
