@@ -305,6 +305,15 @@ Machine = {}
 Machine.new = function()
     local methods = {}
 
+    methods.add_draw_command = function(rect, tt)
+    end
+
+    methods.add_delta_command = function(rect, property_name, value)
+    end
+
+    methods.add_delta_indirect_command = function(rect, member, src_property, src_property_name)
+    end
+
     return methods
 end
 
@@ -372,7 +381,41 @@ Parser.new = function(source)
     end
 
     methods.parse_command = function()
-        return 0
+        if scanner.consume("draw") then
+            -- it's a draw command
+            local rect = methods.parse_rect()
+            scanner.expect(",")
+            local tt_name = scanner.text()
+            scanner.scan()
+            local tt = tt_map[tt_name]
+            if tt == nil then
+                -- throw new ParseException(line, "Undefined truth table '" + ttName + "'");
+                print("Undefined truth table") -- FIXME accumulate error
+            else
+                m.add_draw_command(rect, tt)
+            end
+        else
+            -- it's a delta command
+            local rect = methods.parse_rect()
+            scanner.expect(".")
+            local property_name = scanner.text()
+            scanner.scan()
+            scanner.expect("+=")
+            if scanner.type() == "numlit" then
+                local value = tonumber(scanner.text())
+                scanner.scan()
+                m.add_delta_command(rect, property_name, value)
+            else
+                local src_rect = methods.parse_rect()
+                scanner.expect(".")
+                local src_property_name = scanner.text()
+                scanner.scan()
+                m.add_delta_indirect_command(rect, member, src_property, src_property_name)
+            end
+        end
+    end
+
+    methods.parse_rect = function()
     end
 
     methods.dump_state = function()
