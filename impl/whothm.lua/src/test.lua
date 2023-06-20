@@ -1,4 +1,5 @@
--- LUA_PATH="?.lua" lua sanity.lua
+-- Usage:
+--   LUA_PATH="?.lua" lua test.lua
 
 table = require "table"
 
@@ -69,4 +70,4 @@ end
 local p = Parser.new(source)
 local machine = p.parse()
 p.dump_state()
-machine.dump_state()
+print(machine.to_s())

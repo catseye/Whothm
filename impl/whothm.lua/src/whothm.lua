@@ -369,10 +369,8 @@ Machine.new = function()
         end
     end
 
-    methods.dump_state = function()
-        for key,value in pairs(commands) do
-            print(key, render_table(value))
-        end
+    methods.to_s = function()
+        return "Machine(" .. render_table(commands) .. ")"
     end
 
     return methods
