@@ -301,27 +301,78 @@ Scanner.new = function(s)
 end
 
 
+render_table = function(t)
+    local s = "{"
+    for key,value in pairs(t) do
+        if type(value) == "table" then
+            s = s .. key .. ": " .. render_table(value) .. ","
+        else
+            s = s .. key .. ": " .. tostring(value) .. ","
+        end
+    end
+    return s .. "}"
+end
+
+
 Machine = {}
 Machine.new = function()
     local methods = {}
+    local bitmap = nil
     local commands = {}
 
     methods.add_draw_command = function(rect, tt)
-        table.insert(commands, "draw command")
+        local command = {}
+        command.type = "draw"
+        command.rect = rect
+        command.tt = tt
+        table.insert(commands, command)
     end
 
-    methods.add_delta_command = function(rect, property_name, value)
-        table.insert(commands, "delta command: " .. rect.to_s() .. "." .. property_name)
+    methods.add_delta_command = function(rect, property, delta)
+        local command = {}
+        command.type = "delta"
+        command.rect = rect
+        command.property = property
+        command.delta = delta
+        table.insert(commands, command)
     end
 
-    methods.add_delta_indirect_command = function(rect, member, src_property, src_property_name)
-        table.insert(commands, "delta indirect command")
+    methods.add_delta_indirect_command = function(rect, property, src_rect, src_property)
+        local command = {}
+        command.type = "delta_indirect"
+        command.rect = rect
+        command.property = property
+        command.src_rect = rect
+        command.src_property = property
+        table.insert(commands, command)
+    end
+
+    methods.execute = function(command)
+        if command.type == "draw" then
+            command.rect.draw(bitmap, command.tt)
+        elseif command.type == "delta" then
+            command.rect.change_property(command.property, command.delta)
+        elseif command.type == "delta_indirect" then
+            local delta = command.src_rect.get_property(src_property)
+            command.dest_rect.change_property(command.dest_property, delta)
+        else
+            error("Malformed command: " .. render_table(command))
+        end
+    end
+
+    methods.run = function(given_bitmap)
+        bitmap = given_bitmap
+        for i = 0,100 do
+            for key,command in pairs(commands) do
+                methods.execute(command)
+            end
+        end
     end
 
     methods.dump_state = function()
         for key,value in pairs(commands) do
-            print(key, value)
-         end
+            print(key, render_table(value))
+        end
     end
 
     return methods
@@ -408,19 +459,19 @@ Parser.new = function(source)
             -- it's a delta command
             local rect = methods.parse_rect()
             scanner.expect(".")
-            local property_name = scanner.text()
+            local property = scanner.text()
             scanner.scan()
             scanner.expect("+=")
             if scanner.type() == "numlit" then
                 local value = tonumber(scanner.text())
                 scanner.scan()
-                m.add_delta_command(rect, property_name, value)
+                m.add_delta_command(rect, property, value)
             else
                 local src_rect = methods.parse_rect()
                 scanner.expect(".")
-                local src_property_name = scanner.text()
+                local src_property = scanner.text()
                 scanner.scan()
-                m.add_delta_indirect_command(rect, member, src_property, src_property_name)
+                m.add_delta_indirect_command(rect, property, src_rect, src_property)
             end
         end
     end
