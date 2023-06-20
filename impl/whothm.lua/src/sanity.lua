@@ -54,8 +54,19 @@ r := (0, 0, 1, 2);
 s := (0, 0, 1, 1);
 XOR := TF/FT;
 begin
+r.x += r.w;
+r.x += -1;
+r.w += 1;
+r.h += 1;
+draw r, XOR;
+s.x += s.w;
+s.x += -1;
+s.w += 1;
+s.h += 2;
+draw s, XOR;
 end
 ]]
 local p = Parser.new(source)
 local machine = p.parse()
 p.dump_state()
+machine.dump_state()

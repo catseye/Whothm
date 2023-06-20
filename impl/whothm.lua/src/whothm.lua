@@ -304,14 +304,24 @@ end
 Machine = {}
 Machine.new = function()
     local methods = {}
+    local commands = {}
 
     methods.add_draw_command = function(rect, tt)
+        table.insert(commands, "draw command")
     end
 
     methods.add_delta_command = function(rect, property_name, value)
+        table.insert(commands, "delta command: " .. rect.to_s() .. "." .. property_name)
     end
 
     methods.add_delta_indirect_command = function(rect, member, src_property, src_property_name)
+        table.insert(commands, "delta indirect command")
+    end
+
+    methods.dump_state = function()
+        for key,value in pairs(commands) do
+            print(key, value)
+         end
     end
 
     return methods
@@ -416,6 +426,14 @@ Parser.new = function(source)
     end
 
     methods.parse_rect = function()
+        local name = scanner.text()
+        scanner.scan()
+        local rect = rect_map[name]
+        if rect == nil then
+            -- throw new ParseException(line, "Undefined rectangle '" + rectName + "'");
+            print("Undefined rectangle")
+        end
+        return rect
     end
 
     methods.dump_state = function()
