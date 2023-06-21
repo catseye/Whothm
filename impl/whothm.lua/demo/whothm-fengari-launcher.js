@@ -42,40 +42,54 @@ function launch(config) {
   }
 
   var controlPanel = document.getElementById('control-panel');
-  /*
+  examplePrograms = [{
+    filename: "hello-world.whothm",
+    contents: `r := (0, 0, 1, 2);
+s := (0, 0, 1, 2);
+XOR := TF/FT;
+
+begin
+r.x += r.w;
+r.x += -1;
+r.w += 1;
+r.h += 1;
+draw r, XOR;
+s.x += s.w;
+s.x += -1;
+s.w += 1;
+s.h += 2;
+draw s, XOR;
+end`
+    }
+  ];
   var select = makeSelect(controlPanel, "example program:", examplePrograms, function(option) {
     document.getElementById('editor').value = option.contents;
   });
-  selectOptionByText(select, "hello-world.velo");
-  */
+  selectOptionByText(select, "hello-world.whothm");
 }
 
-function setUpPrint(elem) {
-  elem.innerHTML = '';
-  fengari.interop.push(fengari.L, function() {
-    var s = fengari.interop.tojs(fengari.L, 2);
-    elem.innerHTML += s + "\n";
-  });
-  fengari.lua.lua_setglobal(fengari.L, "whothmPrint");
-}
-
-function loadWhothmProg(progText) {
-  fengari.interop.push(fengari.L, progText);
-  fengari.lua.lua_setglobal(fengari.L, "whothm_prog");
-}
-
-function runWhothmProg() {
-  var luaProg = `
-    local parser = Parser.new(whothm_prog)
-    local machine = parser.parse()
-    whothmPrint(machine.to_s())
-  `;
-
-  fengari.load(luaProg)();
+function setLuaGlobal(name, value) {
+  fengari.interop.push(fengari.L, value);
+  fengari.lua.lua_setglobal(fengari.L, name);
 }
 
 function run() {
-  setUpPrint(document.getElementById("output"));
-  loadWhothmProg(document.getElementById("editor").value);
-  runWhothmProg();
+  // set up print function
+  var outputElem = document.getElementById("output");
+  outputElem.innerHTML = '';
+  setLuaGlobal("whothmPrint", function() {
+    var s = fengari.interop.tojs(fengari.L, 2);
+    outputElem.innerHTML += s + "\n";
+  });
+
+  // set whothm program
+  var progText = document.getElementById("editor").value;
+  setLuaGlobal("whothm_prog", progText);
+
+  // run whothm program
+  fengari.load(`
+    local parser = Parser.new(whothm_prog)
+    local machine = parser.parse()
+    whothmPrint(machine.to_s())
+  `)();
 }
