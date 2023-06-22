@@ -20,7 +20,7 @@ local t = TruthTable.new()
 t.map_to_true("FT")
 t.map_to_true("TF")
 r.draw(b, t)
-print(b.render_to_text())
+print(b.to_s())
 
 local source = [[
 r := (0, 0, 1, 2);

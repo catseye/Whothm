@@ -114,7 +114,7 @@ function run() {
     t.map_to_true("TF")
     r.draw(bitmap, t)
 
-    print(bitmap.render_to_text())
+    print(bitmap.to_s())
     bitmap.foreach(plot_on_canvas)
   `)();
 }

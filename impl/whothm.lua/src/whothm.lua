@@ -5,6 +5,19 @@
 table = require "table"
 
 
+--[[ ========== DEBUG ========= ]]--
+
+local do_debug = false
+
+local debug = function(s)
+    if do_debug then
+        print("--> (" .. s .. ")")
+    end
+end
+
+
+--[[ ========== MODEL ========= ]]--
+
 TruthTable = {}
 TruthTable.new = function()
     local tt = {}
@@ -36,23 +49,31 @@ end
 
 Rectangle = {}
 Rectangle.new = function(x, y, w, h)
-    local data = {
-        ["x"] = x,
-        ["y"] = y,
-        ["w"] = w,
-        ["h"] = h
-    }
     local methods = {}
 
     methods.get_property = function(name)
+        local data = {
+            ["x"] = x,
+            ["y"] = y,
+            ["w"] = w,
+            ["h"] = h
+        }
         return data[name]
     end
 
     methods.change_property = function(name, delta)
-        data[name] = data[name] + delta
+        if name == "x" then x = x + delta
+        elseif name == "y" then y = y + delta
+        elseif name == "w" then w = w + delta
+        elseif name == "h" then h = h + delta
+        else
+            error("Cannot modify property '" .. name .. "' of rectangle")
+        end
     end
 
     methods.draw = function(bitmap, tt)
+        debug("drawing: " .. methods.to_s() .. " with " .. tt.to_s())
+
         local b_w = bitmap.get_width()
         local b_h = bitmap.get_height()
 
@@ -70,6 +91,8 @@ Rectangle.new = function(x, y, w, h)
                 bitmap.modify_pixel(px, py, tt)
             end
         end
+
+        debug("bitmap now:\n" .. bitmap.to_s())
     end
 
     methods.to_s = function()
@@ -117,7 +140,7 @@ BitMap.new = function(width, height)
         end
     end
 
-    methods.render_to_text = function()
+    methods.to_s = function()
         local buffer = {}
         local px, py
         local c
@@ -129,7 +152,7 @@ BitMap.new = function(width, height)
                     table.insert(buffer, " ")
                 end
             end
-            table.insert(buffer, "\n")
+            table.insert(buffer, ";\n")
         end
         return table.concat(buffer)
     end
@@ -140,12 +163,8 @@ BitMap.new = function(width, height)
     return methods
 end
 
---[[ ============ SCANNER SUPPORT ============ ]]--
 
-DEBUG = false
-function debug(s)
-    if DEBUG then print(s) end
-end
+--[[ ========== SCANNER ========== ]]--
 
 function isdigit(s)
     return string.find("0123456789", s, 1, true) ~= nil
@@ -178,8 +197,6 @@ end
 function iseol(s)
     return string.find("\n\r", s, 1, true) ~= nil
 end
-
---[[ ========== SCANNER ========== ]]--
 
 Scanner = {}
 Scanner.new = function(s)
@@ -343,6 +360,7 @@ Machine.new = function()
     end
 
     methods.execute = function(command)
+        --debug("executing command: " .. render_table(command))
         if command.type == "draw" then
             command.rect.draw(bitmap, command.tt)
         elseif command.type == "delta" then
@@ -493,4 +511,29 @@ Parser.new = function(source)
     scanner.scan()
 
     return methods
+end
+
+
+--[[ ================== MAIN =============== ]]--
+
+function main(arg)
+    while #arg > 0 do
+        if arg[1] == "--debug" then
+            do_debug = true
+        else
+            local f = assert(io.open(arg[1], "r"))
+            local whothm_prog = f:read("*all")
+            f:close()
+
+            local parser = Parser.new(whothm_prog)
+            local machine = parser.parse()
+            local bitmap = BitMap.new(80, 30)
+            machine.run(bitmap)
+        end
+        table.remove(arg, 1)
+    end
+end
+
+if arg ~= nil then
+    main(arg)
 end
