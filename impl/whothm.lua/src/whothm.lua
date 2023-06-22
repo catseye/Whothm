@@ -152,7 +152,7 @@ BitMap.new = function(width, height)
                     table.insert(buffer, " ")
                 end
             end
-            table.insert(buffer, ";\n")
+            table.insert(buffer, "\n")
         end
         return table.concat(buffer)
     end
@@ -529,6 +529,7 @@ function main(arg)
             local machine = parser.parse()
             local bitmap = BitMap.new(80, 30)
             machine.run(bitmap)
+            print(bitmap.to_s())
         end
         table.remove(arg, 1)
     end

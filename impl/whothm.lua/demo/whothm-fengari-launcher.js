@@ -75,6 +75,12 @@ function setLuaGlobal(name, value) {
 }
 
 function run() {
+  // set up debug function
+  setLuaGlobal("console_log", function() {
+    var s = fengari.interop.tojs(fengari.L, 2);
+    console.log(s);
+  });
+
   // set up print function
   var outputElem = document.getElementById("output");
   outputElem.innerHTML = '';
@@ -104,17 +110,11 @@ function run() {
   fengari.load(`
     local parser = Parser.new(whothm_prog)
     local machine = parser.parse()
-    local bitmap = BitMap.new(100, 100)
-
-    -- machine.run(bitmap)
-
-    local r = Rectangle.new(5, 1, 6, 10)
-    local t = TruthTable.new()
-    t.map_to_true("FT")
-    t.map_to_true("TF")
-    r.draw(bitmap, t)
-
-    print(bitmap.to_s())
+    local bitmap = BitMap.new(50, 50)
+    console_log("Running machine")
+    machine.run(bitmap)
+    console_log("Plotting on canvas")
     bitmap.foreach(plot_on_canvas)
+    console_log("Done")
   `)();
 }
