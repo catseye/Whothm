@@ -76,7 +76,7 @@ function setLuaGlobal(name, value) {
 
 function run() {
   // set up debug function
-  setLuaGlobal("console_log", function() {
+  setLuaGlobal("debug", function() {
     var s = fengari.interop.tojs(fengari.L, 2);
     console.log(s);
   });
@@ -100,6 +100,10 @@ function run() {
     var c = fengari.interop.tojs(fengari.L, 4);
     ctx.fillStyle = c ? "black" : "white";
     ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+    /*
+    ctx.strokeStyle = c ? "black" : "white";
+    ctx.strokeRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+    */
   });
 
   // set whothm program
@@ -111,10 +115,10 @@ function run() {
     local parser = Parser.new(whothm_prog)
     local machine = parser.parse()
     local bitmap = BitMap.new(50, 50)
-    console_log("Running machine")
+    debug("Running machine")
     machine.run(bitmap)
-    console_log("Plotting on canvas")
+    debug("Plotting on canvas")
     bitmap.foreach(plot_on_canvas)
-    console_log("Done")
+    debug("Done")
   `)();
 }

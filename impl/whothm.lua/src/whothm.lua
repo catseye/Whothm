@@ -9,7 +9,7 @@ table = require "table"
 
 local do_debug = false
 
-local debug = function(s)
+debug = function(s)
     if do_debug then
         print("--> (" .. s .. ")")
     end
@@ -92,7 +92,7 @@ Rectangle.new = function(x, y, w, h)
             end
         end
 
-        debug("bitmap now:\n" .. bitmap.to_s())
+        --debug("bitmap now:\n" .. bitmap.to_s())
     end
 
     methods.to_s = function()
@@ -119,13 +119,14 @@ BitMap.new = function(width, height)
     methods.get_height = function() return height end
     methods.get_width = function() return width end
 
+    -- x, y here are zero-based
     methods.get_pixel = function(x, y)
-        local pos = y * width + x
+        local pos = y * width + x + 1
         return data[pos]
     end
 
     methods.modify_pixel = function(x, y, tt)
-        local pos = y * width + x
+        local pos = y * width + x + 1
         if x < width and y < height then
             data[pos] = tt.apply(data[pos], true)
         end
@@ -133,8 +134,8 @@ BitMap.new = function(width, height)
 
     methods.foreach = function(callback)
         local px, py
-        for py = 1,height do
-            for px = 1,width do
+        for py = 0,height - 1 do
+            for px = 0,width - 1 do
                 callback(px, py, methods.get_pixel(px, py))
             end
         end
@@ -144,8 +145,8 @@ BitMap.new = function(width, height)
         local buffer = {}
         local px, py
         local c
-        for py = 1,height do
-            for px = 1,width do
+        for py = 0,height - 1 do
+            for px = 0,width - 1 do
                 if methods.get_pixel(px, py) then
                     table.insert(buffer, "*")
                 else
@@ -360,7 +361,7 @@ Machine.new = function()
     end
 
     methods.execute = function(command)
-        --debug("executing command: " .. render_table(command))
+        debug("executing command: " .. render_table(command))
         if command.type == "draw" then
             command.rect.draw(bitmap, command.tt)
         elseif command.type == "delta" then
