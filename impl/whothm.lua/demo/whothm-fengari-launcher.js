@@ -5,6 +5,7 @@
 
 function launch(config) {
   config.container.innerHTML = `
+    <canvas id="canvas" style="border: 1px solid black; float: right" width=400 height=400></canvas>
     <textarea id="editor" rows="10" cols="80"></textarea>
     <div id="control-panel"></div>
     <button onclick="run()">Run</button>
@@ -82,6 +83,22 @@ function run() {
     outputElem.innerHTML += s + "\n";
   });
 
+  // set up canvas drawing
+  var canvas = document.getElementById("canvas");
+  setLuaGlobal("set_color", function() {
+    var r = fengari.interop.tojs(fengari.L, 2);
+    var g = fengari.interop.tojs(fengari.L, 3);
+    var b = fengari.interop.tojs(fengari.L, 4);
+    console.log("set_color", r, g, b)
+  });
+  setLuaGlobal("fill_rect", function() {
+    var x = fengari.interop.tojs(fengari.L, 2);
+    var y = fengari.interop.tojs(fengari.L, 3);
+    var w = fengari.interop.tojs(fengari.L, 4);
+    var h = fengari.interop.tojs(fengari.L, 5);
+    console.log("fill_rect", x, y, w, h)
+  });
+
   // set whothm program
   var progText = document.getElementById("editor").value;
   setLuaGlobal("whothm_prog", progText);
@@ -98,6 +115,6 @@ function run() {
     t.map_to_true("TF")
     r.draw(b, t)
     print(b.render_to_text())
-    b.render_to_canvas(function(s) print(s) end, function(s) print(s) end, 5, 5)
+    b.render_to_canvas(set_color, fill_rect, 5, 5)
   `)();
 }
