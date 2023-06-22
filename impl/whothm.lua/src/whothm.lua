@@ -139,6 +139,22 @@ BitMap.new = function(width, height)
         return table.concat(buffer)
     end
 
+    methods.render_to_canvas = function(set_color, fill_rect, cell_width, cell_height)
+        local px, py
+        local p, c
+        for py = 1,height do
+            for px = 1,width do
+                p = methods.get_pixel(px, py)
+                if p then
+                    set_color(0, 0, 0)
+                else
+                    set_color(255, 255, 255)
+                end
+                fill_rect(px * cell_width, py * cell_height, cell_width, cell_height)
+            end
+        end
+    end
+
     -- init
     methods.clear()
 

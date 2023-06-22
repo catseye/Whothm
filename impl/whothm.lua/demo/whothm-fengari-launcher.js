@@ -77,7 +77,7 @@ function run() {
   // set up print function
   var outputElem = document.getElementById("output");
   outputElem.innerHTML = '';
-  setLuaGlobal("whothmPrint", function() {
+  setLuaGlobal("print", function() {
     var s = fengari.interop.tojs(fengari.L, 2);
     outputElem.innerHTML += s + "\n";
   });
@@ -90,6 +90,14 @@ function run() {
   fengari.load(`
     local parser = Parser.new(whothm_prog)
     local machine = parser.parse()
-    whothmPrint(machine.to_s())
+    -- print(machine.to_s())
+    local r = Rectangle.new(5, 1, 6, 10)
+    local b = BitMap.new(40, 20)
+    local t = TruthTable.new()
+    t.map_to_true("FT")
+    t.map_to_true("TF")
+    r.draw(b, t)
+    print(b.render_to_text())
+    b.render_to_canvas(function(s) print(s) end, function(s) print(s) end, 5, 5)
   `)();
 }
