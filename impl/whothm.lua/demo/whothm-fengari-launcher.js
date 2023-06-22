@@ -85,18 +85,15 @@ function run() {
 
   // set up canvas drawing
   var canvas = document.getElementById("canvas");
-  setLuaGlobal("set_color", function() {
-    var r = fengari.interop.tojs(fengari.L, 2);
-    var g = fengari.interop.tojs(fengari.L, 3);
-    var b = fengari.interop.tojs(fengari.L, 4);
-    console.log("set_color", r, g, b)
-  });
-  setLuaGlobal("fill_rect", function() {
+  var ctx = canvas.getContext('2d');
+  var cellWidth = 5;
+  var cellHeight = 5;
+  setLuaGlobal("plot_on_canvas", function() {
     var x = fengari.interop.tojs(fengari.L, 2);
     var y = fengari.interop.tojs(fengari.L, 3);
-    var w = fengari.interop.tojs(fengari.L, 4);
-    var h = fengari.interop.tojs(fengari.L, 5);
-    console.log("fill_rect", x, y, w, h)
+    var c = fengari.interop.tojs(fengari.L, 4);
+    ctx.fillStyle = c ? "black" : "white";
+    ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
   });
 
   // set whothm program
@@ -107,14 +104,17 @@ function run() {
   fengari.load(`
     local parser = Parser.new(whothm_prog)
     local machine = parser.parse()
-    -- print(machine.to_s())
+    local bitmap = BitMap.new(100, 100)
+
+    -- machine.run(bitmap)
+
     local r = Rectangle.new(5, 1, 6, 10)
-    local b = BitMap.new(40, 20)
     local t = TruthTable.new()
     t.map_to_true("FT")
     t.map_to_true("TF")
-    r.draw(b, t)
-    print(b.render_to_text())
-    b.render_to_canvas(set_color, fill_rect, 5, 5)
+    r.draw(bitmap, t)
+
+    print(bitmap.render_to_text())
+    bitmap.foreach(plot_on_canvas)
   `)();
 }

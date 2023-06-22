@@ -96,20 +96,6 @@ BitMap.new = function(width, height)
     methods.get_height = function() return height end
     methods.get_width = function() return width end
 
-    methods.alter_width = function(delta)
-        local new_width = width + delta
-        if new_width < 1 then new_width = 1 end
-        width = new_width
-        methods.clear()
-    end
-
-    methods.alter_height = function(delta)
-        local new_height = height + delta
-        if new_height < 1 then new_height = 1 end
-        height = new_height
-        methods.clear()
-    end
-
     methods.get_pixel = function(x, y)
         local pos = y * width + x
         return data[pos]
@@ -119,6 +105,15 @@ BitMap.new = function(width, height)
         local pos = y * width + x
         if x < width and y < height then
             data[pos] = tt.apply(data[pos], true)
+        end
+    end
+
+    methods.foreach = function(callback)
+        local px, py
+        for py = 1,height do
+            for px = 1,width do
+                callback(px, py, methods.get_pixel(px, py))
+            end
         end
     end
 
@@ -137,22 +132,6 @@ BitMap.new = function(width, height)
             table.insert(buffer, "\n")
         end
         return table.concat(buffer)
-    end
-
-    methods.render_to_canvas = function(set_color, fill_rect, cell_width, cell_height)
-        local px, py
-        local p, c
-        for py = 1,height do
-            for px = 1,width do
-                p = methods.get_pixel(px, py)
-                if p then
-                    set_color(0, 0, 0)
-                else
-                    set_color(255, 255, 255)
-                end
-                fill_rect(px * cell_width, py * cell_height, cell_width, cell_height)
-            end
-        end
     end
 
     -- init
@@ -353,13 +332,13 @@ Machine.new = function()
         table.insert(commands, command)
     end
 
-    methods.add_delta_indirect_command = function(rect, property, src_rect, src_property)
+    methods.add_delta_indirect_command = function(dest_rect, dest_property, src_rect, src_property)
         local command = {}
         command.type = "delta_indirect"
-        command.rect = rect
-        command.property = property
-        command.src_rect = rect
-        command.src_property = property
+        command.dest_rect = dest_rect
+        command.dest_property = dest_property
+        command.src_rect = src_rect
+        command.src_property = src_property
         table.insert(commands, command)
     end
 
@@ -369,7 +348,7 @@ Machine.new = function()
         elseif command.type == "delta" then
             command.rect.change_property(command.property, command.delta)
         elseif command.type == "delta_indirect" then
-            local delta = command.src_rect.get_property(src_property)
+            local delta = command.src_rect.get_property(command.src_property)
             command.dest_rect.change_property(command.dest_property, delta)
         else
             error("Malformed command: " .. render_table(command))
