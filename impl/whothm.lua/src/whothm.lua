@@ -113,8 +113,8 @@ Rectangle.new = function(x, y, w, h)
         if bottom > b_h then bottom = b_h end
 
         local px, py
-        for py = y,bottom do
-            for px = x,right do
+        for py = y,bottom-1 do
+            for px = x,right-1 do
                 bitmap.modify_pixel(px, py, tt)
             end
         end
@@ -154,8 +154,8 @@ BitMap.new = function(width, height)
 
     -- x, y here are zero-based
     methods.modify_pixel = function(x, y, tt)
-        local pos = y * width + x + 1
-        if x < width and y < height then
+        if x >= 0 and x < width and y >= 0 and y < height then
+            local pos = y * width + x + 1
             data[pos] = tt.apply(data[pos], true)
         end
     end

@@ -114,7 +114,7 @@ function run() {
   fengari.load(`
     local parser = Parser.new(whothm_prog)
     local machine = parser.parse()
-    local bitmap = BitMap.new(50, 50)
+    local bitmap = BitMap.new(128, 128)
     debug("Running machine")
     machine.run(bitmap)
     debug("Plotting on canvas")
