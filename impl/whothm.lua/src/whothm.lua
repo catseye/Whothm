@@ -5,6 +5,27 @@
 table = require "table"
 
 
+--[[ ========== UTILS ========= ]]--
+
+function table_size(t)
+    local count = 0
+    for _ in pairs(t) do count = count + 1 end
+    return count
+end
+
+render_table = function(t)
+    local s = "{"
+    for key,value in pairs(t) do
+        if type(value) == "table" then
+            s = s .. key .. ": " .. render_table(value) .. ","
+        else
+            s = s .. key .. ": " .. tostring(value) .. ","
+        end
+    end
+    return s .. "}"
+end
+
+
 --[[ ========== DEBUG ========= ]]--
 
 local do_debug = false
@@ -36,11 +57,17 @@ TruthTable.new = function()
     end
 
     methods.to_s = function()
-        local text = "TruthTable(\n"
+        local text = "TruthTable(["
+        local i = 0
+        local size = table_size(tt)
         for key,value in pairs(tt) do
-           text = text .. "  " .. key .. " => T,\n"
+            text = text .. key
+            i = i + 1
+            if i < size then
+                text = text .. ", "
+            end
         end
-        return text .. ")"
+        return text .. "])"
     end
 
     return methods
@@ -72,7 +99,7 @@ Rectangle.new = function(x, y, w, h)
     end
 
     methods.draw = function(bitmap, tt)
-        debug("drawing: " .. methods.to_s() .. " with " .. tt.to_s())
+        --debug("drawing: " .. methods.to_s() .. " with " .. tt.to_s())
 
         local b_w = bitmap.get_width()
         local b_h = bitmap.get_height()
@@ -92,7 +119,7 @@ Rectangle.new = function(x, y, w, h)
             end
         end
 
-        debug("bitmap now:\n" .. bitmap.to_s())
+        --debug("bitmap now:\n" .. bitmap.to_s())
     end
 
     methods.to_s = function()
@@ -314,19 +341,6 @@ Scanner.new = function(s)
 end
 
 
-render_table = function(t)
-    local s = "{"
-    for key,value in pairs(t) do
-        if type(value) == "table" then
-            s = s .. key .. ": " .. render_table(value) .. ","
-        else
-            s = s .. key .. ": " .. tostring(value) .. ","
-        end
-    end
-    return s .. "}"
-end
-
-
 Machine = {}
 Machine.new = function()
     local methods = {}
@@ -361,12 +375,18 @@ Machine.new = function()
     end
 
     methods.execute = function(command)
-        debug("executing command: " .. render_table(command))
+        --debug("executing command: " .. render_table(command))
         if command.type == "draw" then
+            --print("DrawCommand(r=" .. command.rect.to_s() .. ",tt=" .. command.tt.to_s() .. ")")
             command.rect.draw(bitmap, command.tt)
         elseif command.type == "delta" then
+            --print("DeltaCommand(r=" .. command.rect.to_s() .. ",m=" .. command.property .. ",d=" .. command.delta .. ")")
             command.rect.change_property(command.property, command.delta)
         elseif command.type == "delta_indirect" then
+            --print(
+            --    "DeltaIndirectCommand(srcR=" .. command.src_rect.to_s() .. ",srcM=" .. command.src_property ..
+            --    ",destR=" .. command.dest_rect.to_s() .. ",destM=" .. command.dest_property .. ")"
+            --)
             local delta = command.src_rect.get_property(command.src_property)
             command.dest_rect.change_property(command.dest_property, delta)
         else
@@ -378,6 +398,7 @@ Machine.new = function()
         local i, j, command
         bitmap = given_bitmap
         for i = 0,100 do
+            --print(i)
             for j,command in ipairs(commands) do
                 methods.execute(command)
             end
