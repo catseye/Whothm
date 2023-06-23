@@ -92,7 +92,7 @@ Rectangle.new = function(x, y, w, h)
             end
         end
 
-        --debug("bitmap now:\n" .. bitmap.to_s())
+        debug("bitmap now:\n" .. bitmap.to_s())
     end
 
     methods.to_s = function()
@@ -375,9 +375,10 @@ Machine.new = function()
     end
 
     methods.run = function(given_bitmap)
+        local i, j, command
         bitmap = given_bitmap
         for i = 0,100 do
-            for key,command in pairs(commands) do
+            for j,command in ipairs(commands) do
                 methods.execute(command)
             end
         end
