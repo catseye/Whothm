@@ -152,6 +152,7 @@ BitMap.new = function(width, height)
         return data[pos]
     end
 
+    -- x, y here are zero-based
     methods.modify_pixel = function(x, y, tt)
         local pos = y * width + x + 1
         if x < width and y < height then
