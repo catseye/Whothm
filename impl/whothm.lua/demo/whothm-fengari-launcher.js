@@ -5,7 +5,7 @@
 
 function launch(config) {
   config.container.innerHTML = `
-    <canvas id="canvas" style="border: 1px solid black; float: right" width=400 height=400></canvas>
+    <canvas id="canvas" width=400 height=400></canvas>
     <textarea id="editor" rows="10" cols="80"></textarea>
     <div id="control-panel"></div>
     <button onclick="run()">Run</button>
@@ -100,10 +100,6 @@ function run() {
     var c = fengari.interop.tojs(fengari.L, 4);
     ctx.fillStyle = c ? "black" : "white";
     ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
-    /*
-    ctx.strokeStyle = c ? "black" : "white";
-    ctx.strokeRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
-    */
   });
 
   // set whothm program
