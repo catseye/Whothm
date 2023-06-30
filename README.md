@@ -1,6 +1,11 @@
 The Whothm Drawing Language
 ===========================
 
+_Try it online_ [@ catseye.tc](https://catseye.tc/installation/Whothm)
+| _See also:_ [Etcha](https://github.com/catseye/Etcha)
+
+- - - -
+
 Overview
 --------
 
@@ -121,6 +126,11 @@ it is written in Java. Using a browser which supports Java applets, it
 can be interacted with in the [JWhothm
 exhibit](http://catseye.tc/gallery/esolangs/jwhothm/) in the [Gallery of
 Interactive Esolangs](http://catseye.tc/gallery/esolangs/).
+
+_(Update 2023: Cat's Eye Technologies now has another implementation of_
+_Whothm, called [whothm.lua](impl/whothm.lua/), and_ it is this that is_
+_now [installed online at catseye.tc](https://catseye.tc/installation/Whothm),_
+_replacing the now-defunct "JWhothm exhibit" linked to above.)_
 
 Happy infinite drawing!  
 Chris Pressey  
