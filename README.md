@@ -2,7 +2,7 @@ The Whothm Drawing Language
 ===========================
 
 _Try it online_ [@ catseye.tc](https://catseye.tc/installation/Whothm)
-| _See also:_ [Etcha](https://github.com/catseye/Etcha)
+| _See also:_ [Etcha](https://codeberg.org/catseye/Etcha#the-etcha-programming-language)
 
 - - - -
 

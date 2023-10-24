@@ -28,4 +28,4 @@ In other words, you can just put that bin dir on your `PATH`
 and type `whothm` to run it.
 
 [Fengari]: https://fengari.io/
-[how to run things locally]: https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally#run-local-server
+[how to run things locally]: https://web.archive.org/web/20190117102459/https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally#run-local-server
